@@ -27,7 +27,7 @@ if (@$_POST['type'] == 'postage') {
 
 class RajaOngkir
 {
-    protected $apiKey = '2676bcf77d8b5739dd53e60afb2779bd';
+    protected $apiKey = '5557050487e9d11d57b0ee3cdc7a2ecd';
 
     function getProvinces()
     {

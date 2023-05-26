@@ -18,7 +18,7 @@ function api($url)
     return $result = json_decode($result, true);
 }
 
-$key = 'd71533af9cbd0a51005282dd79741f1a';
+$key = '5557050487e9d11d57b0ee3cdc7a2ecd';
 $url = 'https://api.rajaongkir.com/starter/province?key=' . $key;
 $province = api($url);
 $province = $province['rajaongkir']['results'];
