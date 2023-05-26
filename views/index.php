@@ -62,7 +62,7 @@ var_dump($province);
                                 </div> <!-- option asal provinsi -->
                                 <div class="mb-3">
                                     <p class="font-m-m mb-2">Kota</p>
-                                    <select class="form-select" id="origin-cities" aria-label="Default select example">
+                                    <select class="form-select" id="origin-cities" name="origin-cities" aria-label="Default select example">
                                         <option selected>Pilih Kota</option>
                                         <option value="1">Surabaya</option>
                                     </select>
@@ -81,7 +81,7 @@ var_dump($province);
                                 </div><!-- option tujuan provinsi -->
                                 <div class="mb-3">
                                     <p class="font-m-m mb-2">Kota</p>
-                                    <select class="form-select" id="destination-cities" aria-label="Default select example">
+                                    <select class="form-select" id="destination-cities" name="destination-cities" aria-label="Default select example">
                                         <option selected>Pilih Kota</option>
                                         <option value="1">Surabaya</option>
                                     </select>
@@ -90,7 +90,7 @@ var_dump($province);
 
                             <div class="mb-3">
                                 <p class="font-l-sb mb-2">Berat (Gram)</p>
-                                <input type="number" class="form-control" id="exampleFormControlInput1" placeholder="Berat Barang">
+                                <input type="number" class="form-control" id="weight" placeholder="Berat Barang">
                                 </select>
                             </div><!-- option tujuan provinsi -->
 
@@ -143,24 +143,8 @@ var_dump($province);
                     <div class="JNE">
                         <p class="font-m-sb" id="title">JNE</p>
                         <!--kurir title-->
-                        <div class="card-hasil d-flex flex-direction-row align-items-center justify-content-between mb-2">
-                            <div>
-                                <p class="font-m-sb">JNE OKE</p>
-                                <p class="font-m-r">Ongkos Kirim Ekonomis</p>
-                            </div>
-                            <div>
-                                <p class="font-l-sb">Rp 170.0000</p>
-                            </div>
-                        </div>
-                        <!--detail hasil-->
-                        <div class="card-hasil d-flex flex-direction-row align-items-center justify-content-between">
-                            <div>
-                                <p class="font-m-sb">JNE Reguler</p>
-                                <p class="font-m-r">Ongkos Kirim Ekonomis</p>
-                            </div>
-                            <div>
-                                <p class="font-l-sb">Rp 170.0000</p>
-                            </div>
+                        <div id="containerOpsi">
+
                         </div>
                         <!--detail hasil-->
                     </div>
@@ -241,7 +225,7 @@ var_dump($province);
         // });
 
         $('#detination-province').on('change', function() {
-            const province = $('#origin-province').val();
+            const province = $('#detination-province').val();
             console.log(province);
 
             $.ajax({
@@ -263,17 +247,14 @@ var_dump($province);
                     let jneList = ''
                     $.each(result, function(i, result) {
                         $('#destination-cities').append(`
-                        <option values="${result.city_id}">${result.city_name}</option>
+                        <option value="${result.city_id}">${result.city_name}</option>
                         `);
                     });
 
                     $('#result-jne-list').html(jneList)
-                },
-                complete: function() {
-                    $('#check-postage').attr('disabled', false)
-                    $('#check-postage').text('Cek')
                 }
-            })
+
+            });
         })
 
         $('#origin-province').on('change', function() {
@@ -289,17 +270,20 @@ var_dump($province);
                 },
                 success: function(response) {
 
-                    console.log(response);
+                    // console.log(response);
                     $('#origin-cities').html(null);
                     const data = JSON.parse(response).rajaongkir
                     const result = data.results
+
+                    console.log(result);
+
                     $('#origin-cities').append(`
                         <option selected>Pilih Kota Asal...</option>
                         `);
                     let jneList = ''
                     $.each(result, function(i, result) {
                         $('#origin-cities').append(`
-                        <option values="${result.city_id}">${result.city_name}</option>
+                        <option value="${result.city_id}">${result.city_name}</option>
                         `);
                     });
 
@@ -318,6 +302,13 @@ var_dump($province);
             const weight = $('#weight').val()
             const courier = 'jne'
 
+
+
+            console.log(origin);
+            console.log(destination);
+            console.log(weight);
+            console.log(courier);
+
             $.ajax({
                 url: "rajaongkir.php",
                 type: 'POST',
@@ -329,15 +320,17 @@ var_dump($province);
                     'courier': courier,
                 },
                 success: function(response) {
+                    console.log(response);
+
                     const data = JSON.parse(response).rajaongkir
                     const courier = data.query.courier
                     const results = data.results
 
-                    let jneList = ''
+                    $('#containerOpsi').html('');
                     results.forEach(result => {
                         result.costs.forEach(cost => {
-                            jneList += `
-                            <div class="card-hasil d-flex flex-direction-row align-items-center justify-content-between mb-2">
+                            $('#containerOpsi').append(`
+                             <div class="card-hasil d-flex flex-direction-row align-items-center justify-content-between mb-2">
                                 <div>
                                     <p class="font-m-sb">${cost.service}</p>
                                     <p class="font-m-r">${cost.description}</p>
@@ -346,17 +339,23 @@ var_dump($province);
                                     <p class="font-l-sb">${cost.cost[0].value}</p>
                                 </div>
                             </div>
-                            `
+                            `);
                         });
                     })
 
-                    $('#result-jne-list').html(jneList)
+                    // $('#result-jne-list').html(jneList)
                 },
                 complete: function() {
-                    $('#check-postage').attr('disabled', false)
-                    $('#check-postage').text('Cek')
+                    // $('#check-postage').attr('disabled', false)
+                    // $('#check-postage').text('Cek')
                 }
             })
+        })
+
+
+        $('#origin-cities').on('change', function() {
+            console.log($('#origin-cities').val());
+            console.log($('#origin-cities').html());
         })
     </script>
 </body>
